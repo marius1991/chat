@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  password: MyString
+  public_key: MyString
+  private_key: MyString
+  salt_master_key: MyString
+
+two:
+  name: MyString
+  password: MyString
+  public_key: MyString
+  private_key: MyString
+  salt_master_key: MyString

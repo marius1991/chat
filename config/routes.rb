@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  resources :messages, defaults: {format:'json'}
+
+  resources :users, defaults: {format:'json'}
+
+  get  '/users/:id/pubkey(.:format)' => 'users#pubkey', defaults: {format:'json'}
+
+  post '/users/:id/messages(.:format)' => 'messages#messages', defaults: {format:'json'}
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
