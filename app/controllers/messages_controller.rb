@@ -25,14 +25,25 @@ class MessagesController < ApplicationController
   # POST /messages
   # POST /messages.json
   def create
-    #@inner = params[:inner].name
-    @message = Message.new(message_params)
-    #@message = @inner.name
-    respond_to do |format|
-      if @message.save
-        format.json { render json: @success = '{"status":"1"}'}
-      else
-        format.json { render json: @success = '{"status":"2"}'}
+
+    sha256 = OpenSSL::Digest::SHA256.new
+    digest = sha256.digest(params[:timestamp] + params[:recipientname] + params[:name] + params[:cipher] + params[:iv] + params[:key_recipient_enc] + params[:sig_recipient])
+    public_key = OpenSSL::PKey::RSA.new(User.find_by_name(params[:name]).public_key)
+    decrypt_digest = public_key.public_decrypt(params[:sig_service])
+
+    if digest = decrypt_digest and (:date.to_time.to_i - params[:timestamp]) < 300 and (:date.to_time.to_i - params[:timestamp]) > 0  then
+      @message = Message.new(message_params)
+      @message.is_called = 0
+      respond_to do |format|
+        if @message.save
+          format.json { render json: @success = '{"status":"1"}'}
+        else
+          format.json { render json: @success = '{"status":"2"}'}
+        end
+      end
+    else
+      respond_to do |format|
+          format.json { render json: @success = '{"status":"2"}'}
       end
     end
   end
@@ -51,10 +62,27 @@ class MessagesController < ApplicationController
 
   # POST /users/[name]/messages/
   def messages
-    @messages = Message.where(recipientname: params[:id]).each
-    respond_to do |format|
-      format.json { render :index}
+
+    sha256 = OpenSSL::Digest::SHA256.new
+    digest = sha256.digest(params[:name] + params[:timestamp])
+    public_key = OpenSSL::PKey::RSA.new(User.find_by_name(params[:id]).public_key)
+    decrypt_digest = public_key.public_decrypt(params[:signature])
+
+    if digest = decrypt_digest and (:date.to_time.to_i - params[:timestamp]) < 300 and (:date.to_time.to_i - params[:timestamp]) > 0  then
+      @messages = Message.where(recipientname: params[:id]).where(is_called: false).each
+      @messages.each do |m|
+        m.is_called = true
+        m.save
+      end
+      respond_to do |format|
+        format.json { render :index}
+      end
+    else
+      respond_to do |format|
+        format.json { render json: @success = '{"status":"2"}'}
+      end
     end
+
   end
 
   # DELETE /messages/1

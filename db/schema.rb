@@ -11,17 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150511135042) do
+ActiveRecord::Schema.define(version: 20150518153837) do
 
   create_table "messages", force: :cascade do |t|
-    t.integer "timestamp"
     t.string  "recipientname"
-    t.string  "sig_service"
     t.string  "name"
     t.string  "cipher"
     t.string  "iv"
     t.string  "key_recipient_enc"
     t.string  "sig_recipient"
+    t.boolean "is_called"
   end
 
   create_table "users", force: :cascade do |t|
