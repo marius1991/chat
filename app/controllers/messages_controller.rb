@@ -31,19 +31,25 @@ class MessagesController < ApplicationController
     public_key = OpenSSL::PKey::RSA.new(User.find_by_name(params[:name]).public_key)
     decrypt_digest = public_key.public_decrypt(params[:sig_service])
 
-    if digest = decrypt_digest and (:date.to_time.to_i - params[:timestamp]) < 300 and (:date.to_time.to_i - params[:timestamp]) > 0  then
-      @message = Message.new(message_params)
-      @message.is_called = 0
-      respond_to do |format|
-        if @message.save
-          format.json { render json: @success = '{"status":"1"}'}
-        else
+    if User.find_by_name(params[:recipientname]).exists? then
+      if digest = decrypt_digest and (:date.to_time.to_i - params[:timestamp]) < 300 and (:date.to_time.to_i - params[:timestamp]) > 0  then
+        @message = Message.new(message_params)
+        @message.is_called = 0
+        respond_to do |format|
+          if @message.save
+            format.json { render json: @success = '{"status":"1"}'}
+          else
+            format.json { render json: @success = '{"status":"2"}'}
+          end
+        end
+      else
+        respond_to do |format|
           format.json { render json: @success = '{"status":"2"}'}
         end
       end
     else
       respond_to do |format|
-          format.json { render json: @success = '{"status":"2"}'}
+        format.json { render json: @success = '{"status":"3"}'}
       end
     end
   end
@@ -62,6 +68,10 @@ class MessagesController < ApplicationController
 
   # POST /users/[name]/messages/
   def messages
+
+    if !User.exists?(name: params[:id]) then
+        render json: '{"status":"3"}' and return
+    end
 
     sha256 = OpenSSL::Digest::SHA256.new
     digest = sha256.digest(params[:name] + params[:timestamp])

@@ -35,7 +35,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     if User.find_by_name(params[:name]) != nil
       respond_to do |format|
-          format.json { render json: @success = '{"status":"2"}'}
+          format.json { render json: @success = '{"status":"3"}'}
       end
     else
       respond_to do |format|
@@ -72,7 +72,13 @@ class UsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
+      if User.find_by_name(params[:id]) != nil then
       @user = User.find_by_name(params[:id])
+      else
+        respond_to do |format|
+          format.json { render json: @success = '{"status":"3"}'} #and return
+        end
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
