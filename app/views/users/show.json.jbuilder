@@ -1,1 +1,1 @@
-json.extract! @user, :public_key, :private_key, :salt_master_key
+json.extract! @user, :public_key, :private_key_enc, :salt_master_key

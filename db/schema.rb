@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20150518153837) do
   create_table "users", force: :cascade do |t|
     t.string   "name"
     t.string   "public_key"
-    t.string   "private_key"
+    t.string   "private_key_enc"
     t.string   "salt_master_key"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
