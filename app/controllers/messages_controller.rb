@@ -27,12 +27,12 @@ class MessagesController < ApplicationController
   def create
 
     sha256 = OpenSSL::Digest::SHA256.new
-    digest = sha256.digest(params[:timestamp] + params[:recipientname] + params[:name] + params[:cipher] + params[:iv] + params[:key_recipient_enc] + params[:sig_recipient])
-    public_key = OpenSSL::PKey::RSA.new(User.find_by_name(params[:name]).public_key)
-    decrypt_digest = public_key.public_decrypt(params[:sig_service])
+    digest = sha256.hexdigest(params[:timestamp] + params[:recipientname] + params[:name] + params[:cipher] + params[:iv] + params[:key_recipient_enc] + params[:sig_recipient])
+    public_key = OpenSSL::PKey::RSA.new(Base64.decode64(User.find_by_name(params[:name]).public_key))
+    decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:sig_service]))
 
-    if User.find_by_name(params[:recipientname]).exists? then
-      if digest = decrypt_digest and (:date.to_time.to_i - params[:timestamp]) < 300 and (:date.to_time.to_i - params[:timestamp]) > 0  then
+    if User.exists?(name: params[:recipientname]) then
+      if decrypt_digest = params[:sig_service] and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
         @message = Message.new(message_params)
         @message.is_called = 0
         respond_to do |format|
@@ -74,11 +74,11 @@ class MessagesController < ApplicationController
     end
 
     sha256 = OpenSSL::Digest::SHA256.new
-    digest = sha256.digest(params[:name] + params[:timestamp])
-    public_key = OpenSSL::PKey::RSA.new(User.find_by_name(params[:id]).public_key)
-    decrypt_digest = public_key.public_decrypt(params[:signature])
+    digest = sha256.hexdigest(params[:name] + params[:timestamp])
+    public_key = OpenSSL::PKey::RSA.new(Base64.decode64(User.find_by_name(params[:name]).public_key))
+    decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:signature]))
 
-    if digest = decrypt_digest and (:date.to_time.to_i - params[:timestamp]) < 300 and (:date.to_time.to_i - params[:timestamp]) > 0  then
+    if decrypt_digest = params[:signature] and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
       @messages = Message.where(recipientname: params[:id]).where(is_called: false).each
       @messages.each do |m|
         m.is_called = true
