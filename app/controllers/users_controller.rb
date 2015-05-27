@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :pubkey]
+  before_action :set_user, only: [:show, :pubkey]
   skip_before_filter :verify_authenticity_token
 
   # GET /users
@@ -11,15 +11,6 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
-  end
-
-  # GET /users/new
-  def new
-    @user = User.new
-  end
-
-  # GET /users/1/edit
-  def edit
   end
 
   # Get /users/1/pubkey
@@ -45,27 +36,6 @@ class UsersController < ApplicationController
           format.json { render json: @success = '{"status":"2"}'}
         end
       end
-    end
-  end
-
-  # PATCH/PUT /users/1
-  # PATCH/PUT /users/1.json
-  def update
-    respond_to do |format|
-      if @user.update(user_params)
-        format.json { render :show, status: :ok, location: @user }
-      else
-        format.json { render json: @user.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /users/1
-  # DELETE /users/1.json
-  def destroy
-    @user.destroy
-    respond_to do |format|
-      format.json { head :no_content }
     end
   end
 
