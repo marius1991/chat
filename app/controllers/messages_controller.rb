@@ -45,7 +45,7 @@ class MessagesController < ApplicationController
     end
   end
 
-  # POST /users/[name]/messages/
+  # GET /users/[name]/messages/
   def messages
 
     if !User.exists?(name: params[:id]) then
