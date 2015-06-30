@@ -67,7 +67,7 @@ class MessagesController < ApplicationController
       end
 
       sha256 = OpenSSL::Digest::SHA256.new
-      digest = sha256.hexdigest(params[:id] + params[:timestamp])
+      digest = sha256.hexdigest(params[:id] + params[:timestamp].to_s)
       public_key = OpenSSL::PKey::RSA.new(Base64.decode64(User.find_by_name(params[:id]).public_key))
       decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:signature]))
 
