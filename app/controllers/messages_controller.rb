@@ -84,7 +84,7 @@ class MessagesController < ApplicationController
               m.save
             end
             respond_to do |format|
-              format.json { render :index}
+              format.json { render json: @messages}
             end
           end
         else
