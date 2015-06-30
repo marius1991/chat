@@ -41,7 +41,7 @@ class MessagesController < ApplicationController
           end
         else
           respond_to do |format|
-            format.json { render json: @success = '{"status":"5'+params[:timestamp].to_s + params[:recipientname].to_s + params[:name].to_s + params[:cipher].to_s + params[:iv].to_s + params[:key_recipient_enc].to_s + params[:sig_recipient].to_s + ' Unser Digest:' + digest + '"}'}
+            format.json { render json: @success = '{"status":"5"}'}
           end
         end
       else
@@ -50,12 +50,7 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception => e
-      if params[:sig_recipient] != nil
-        render json:  '{"status":"6'+ params[:sig_recipient].to_s +  '"}'
-      else
-        render json:  '{"status":"7"}'
-      end
-
+      render json: '{"status":"99"}'
     end
   end
 
@@ -76,7 +71,7 @@ class MessagesController < ApplicationController
           @messages = Message.where(recipientname: params[:id]).where(is_called: false)
           if(@messages.blank?)
             respond_to do |format|
-              format.json { render json: '{"status":"6"}'}
+              format.json { render json: '{"status":"5"}'}
             end
           else
             @messages.each do |m|
@@ -89,7 +84,7 @@ class MessagesController < ApplicationController
           end
         else
           respond_to do |format|
-            format.json { render json: '{"status":"5"}'}
+            format.json { render json: '{"status":"4"}'}
           end
         end
       else
@@ -98,7 +93,7 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception => e
-      render json:  '{"status":"4"}'
+      render json: '{"status":"99"}'
     end
   end
 
