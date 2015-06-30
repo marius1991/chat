@@ -23,19 +23,23 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
+    begin
     @user = User.new(user_params)
     if User.find_by_name(params[:name]) != nil
       respond_to do |format|
-          format.json { render json: @success = '{"status":"3"}'}
+          format.json { render json: '{"status":"3"}'}
       end
     else
       respond_to do |format|
         if @user.save
-          format.json { render json: @success = '{"status":"1"}'}
+          format.json { render json: '{"status":"1"}'}
         else
-          format.json { render json: @success = '{"status":"2"}'}
+          format.json { render json: '{"status":"2"}'}
         end
       end
+    end
+    rescue Exception
+      render json: '{"status":"2"}'
     end
   end
 

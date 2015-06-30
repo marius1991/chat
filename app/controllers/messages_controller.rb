@@ -16,62 +16,67 @@ class MessagesController < ApplicationController
   # POST /messages
   # POST /messages.json
   def create
+    begin
+      sha256 = OpenSSL::Digest::SHA256.new
+      digest = sha256.hexdigest(params[:timestamp] + params[:recipientname] + params[:name] + params[:cipher] + params[:iv] + params[:key_recipient_enc] + params[:sig_recipient])
+      public_key = OpenSSL::PKey::RSA.new(Base64.decode64(User.find_by_name(params[:name]).public_key))
+      decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:sig_service]))
 
-    sha256 = OpenSSL::Digest::SHA256.new
-    digest = sha256.hexdigest(params[:timestamp] + params[:recipientname] + params[:name] + params[:cipher] + params[:iv] + params[:key_recipient_enc] + params[:sig_recipient])
-    public_key = OpenSSL::PKey::RSA.new(Base64.decode64(User.find_by_name(params[:name]).public_key))
-    decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:sig_service]))
-
-    if User.exists?(name: params[:recipientname]) then
-      if decrypt_digest = params[:sig_service] and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
-        @message = Message.new(message_params)
-        @message.is_called = 0
-        respond_to do |format|
-          if @message.save
-            format.json { render json: @success = '{"status":"1"}'}
-          else
+      if User.exists?(name: params[:recipientname]) then
+        if decrypt_digest = params[:sig_service] and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
+          @message = Message.new(message_params)
+          @message.is_called = 0
+          respond_to do |format|
+            if @message.save
+              format.json { render json: @success = '{"status":"1"}'}
+            else
+              format.json { render json: @success = '{"status":"2"}'}
+            end
+          end
+        else
+          respond_to do |format|
             format.json { render json: @success = '{"status":"2"}'}
           end
+        end
+      else
+        respond_to do |format|
+          format.json { render json: @success = '{"status":"3"}'}
+        end
+      end
+    rescue Exception
+      render json:  '{"status":"3"}'
+    end
+  end
+
+  # GET /users/[name]/messages/
+  def messages
+    begin
+      if !User.exists?(name: params[:id]) then
+          render json: '{"status":"3"}' and return
+      end
+
+      sha256 = OpenSSL::Digest::SHA256.new
+      digest = sha256.hexdigest(params[:id] + params[:timestamp])
+      public_key = OpenSSL::PKey::RSA.new(Base64.decode64(User.find_by_name(params[:id]).public_key))
+      decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:signature]))
+
+      if decrypt_digest = params[:signature] and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
+        @messages = Message.where(recipientname: params[:id]).where(is_called: false).each
+        @messages.each do |m|
+          m.is_called = true
+          m.save
+        end
+        respond_to do |format|
+          format.json { render :index}
         end
       else
         respond_to do |format|
           format.json { render json: @success = '{"status":"2"}'}
         end
       end
-    else
-      respond_to do |format|
-        format.json { render json: @success = '{"status":"3"}'}
-      end
+    rescue Exception
+      render json:  '{"status":"3"}'
     end
-  end
-
-  # GET /users/[name]/messages/
-  def messages
-
-    if !User.exists?(name: params[:id]) then
-        render json: '{"status":"3"}' and return
-    end
-
-    sha256 = OpenSSL::Digest::SHA256.new
-    digest = sha256.hexdigest(params[:id] + params[:timestamp])
-    public_key = OpenSSL::PKey::RSA.new(Base64.decode64(User.find_by_name(params[:id]).public_key))
-    decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:signature]))
-
-    if decrypt_digest = params[:signature] and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
-      @messages = Message.where(recipientname: params[:id]).where(is_called: false).each
-      @messages.each do |m|
-        m.is_called = true
-        m.save
-      end
-      respond_to do |format|
-        format.json { render :index}
-      end
-    else
-      respond_to do |format|
-        format.json { render json: @success = '{"status":"2"}'}
-      end
-    end
-
   end
 
   private
