@@ -23,7 +23,7 @@ class MessagesController < ApplicationController
       decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:sig_service]))
 
       if User.exists?(name: params[:recipientname]) then
-        if decrypt_digest = params[:sig_service] and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
+        if decrypt_digest == digest and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
           @message = Message.new(message_params)
           @message.is_called = 0
           respond_to do |format|
@@ -60,7 +60,7 @@ class MessagesController < ApplicationController
       public_key = OpenSSL::PKey::RSA.new(Base64.decode64(User.find_by_name(params[:id]).public_key))
       decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:signature]))
 
-      if decrypt_digest = params[:signature] and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
+      if decrypt_digest == digest and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
         @messages = Message.where(recipientname: params[:id]).where(is_called: false).each
         @messages.each do |m|
           m.is_called = true
