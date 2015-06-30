@@ -50,7 +50,7 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception => e
-      render json:  '{"status":"' + e.backtrace + '"}'
+      render json:  '{"status":"' + e.message + '"}'
     end
   end
 
