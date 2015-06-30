@@ -86,9 +86,9 @@ class MessagesController < ApplicationController
             respond_to do |format|
               format.json { render json: '{"status":"6"}'}
             end
-            respond_to do |format|
-              format.json { render json: @messages}
-            end
+            #respond_to do |format|
+            #  format.json { render json: @messages}
+            #end
           end
         else
           respond_to do |format|
