@@ -71,22 +71,28 @@ class MessagesController < ApplicationController
       public_key = OpenSSL::PKey::RSA.new(Base64.decode64(User.find_by_name(params[:id]).public_key))
       decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:signature]))
 
-      if decrypt_digest == digest and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
-        @messages = Message.where(recipientname: params[:id]).where(is_called: false).each
-        @messages.each do |m|
-          m.is_called = true
-          m.save
-        end
-        respond_to do |format|
-          format.json { render :index}
+      if decrypt_digest == digest then
+        if (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
+          @messages = Message.where(recipientname: params[:id]).where(is_called: false).each
+          @messages.each do |m|
+            m.is_called = true
+            m.save
+          end
+          respond_to do |format|
+            format.json { render :index}
+          end
+        else
+          respond_to do |format|
+            format.json { render json: '{"status":"3"}'}
+          end
         end
       else
         respond_to do |format|
-          format.json { render json: @success = '{"status":"2"}'}
+          format.json { render json: '{"status":"2"}'}
         end
       end
     rescue Exception => e
-      render json:  '{"status":"4 ' + e.message + ' "}'
+      render json:  '{"status":"4"}'
     end
   end
 
