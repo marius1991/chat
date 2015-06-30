@@ -86,7 +86,7 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception
-      render json:  '{"status":"2"}'
+      render json:  '{"status":"4"}'
     end
   end
 
