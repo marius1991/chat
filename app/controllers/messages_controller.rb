@@ -23,19 +23,25 @@ class MessagesController < ApplicationController
       decrypt_digest = public_key.public_decrypt(Base64.decode64(params[:sig_service]))
 
       if User.exists?(name: params[:recipientname]) then
-        if decrypt_digest == digest and (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
-          @message = Message.new(message_params)
-          @message.is_called = 0
-          respond_to do |format|
-            if @message.save
-              format.json { render json: @success = '{"status":"1"}'}
-            else
-              format.json { render json: @success = '{"status":"2"}'}
+        if decrypt_digest == digest then
+          if (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
+            @message = Message.new(message_params)
+            @message.is_called = 0
+            respond_to do |format|
+              if @message.save
+                format.json { render json: @success = '{"status":"1"}'}
+              else
+                format.json { render json: @success = '{"status":"2"}'}
+              end
+            end
+          else
+            respond_to do |format|
+              format.json { render json: @success = '{"status":"4"}'}
             end
           end
         else
           respond_to do |format|
-            format.json { render json: @success = '{"status":"2"}'}
+            format.json { render json: @success = '{"status":"5"}'}
           end
         end
       else
@@ -44,7 +50,7 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception
-      render json:  '{"status":"2"}'
+      render json:  '{"status":"6"}'
     end
   end
 
