@@ -41,7 +41,7 @@ class MessagesController < ApplicationController
           end
         else
           respond_to do |format|
-            format.json { render json: @success = '{"status":"' + 'Unser Digest:' + digest.to_s + 'Marians Digest' + params[:sig_service].to_s  +  '"}'}
+            format.json { render json: @success = '{"status":"5'+params[:timestamp].to_s + params[:recipientname].to_s + params[:name].to_s + params[:cipher].to_s + params[:iv].to_s + params[:key_recipient_enc].to_s + params[:sig_recipient].to_s + ' Unser Digest:' + digest + '"}'}
           end
         end
       else
