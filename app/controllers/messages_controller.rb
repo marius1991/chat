@@ -50,7 +50,12 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception => e
-      render json:  '{"status":"6'+ params[:sig_recipient].to_s +  '"}'
+      if params[:sig_recipient] != nil
+        render json:  '{"status":"6'+ params[:sig_recipient].to_s +  '"}'
+      else
+        render json:  '{"status":"7"}'
+      end
+
     end
   end
 
