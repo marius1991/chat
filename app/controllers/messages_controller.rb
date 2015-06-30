@@ -41,7 +41,7 @@ class MessagesController < ApplicationController
           end
         else
           respond_to do |format|
-            format.json { render json: @success = '{"status":"5"}'}
+            format.json { render json: @success = '{"status":"' + 'Unser Digest:' + digest.to_s + 'Marians Digest' + params[:sig_service].to_s  +  '"}'}
           end
         end
       else
@@ -50,7 +50,7 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception => e
-      render json:  '{"status":"' + params[:sig_service].to_s + ' sig recipient: ' + params[:sig_recipient].to_s + 'Unser Digest:' + digest.to_s + '"}'
+      render json:  '{"status":"6"}'
     end
   end
 
