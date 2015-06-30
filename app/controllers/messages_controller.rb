@@ -50,7 +50,7 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception => e
-      render json:  '{"status":"' + params[:sig_service] + ' sig recipient: ' + params[:sig_recipient] + 'Unser Digest:' + digest + '"}'
+      render json:  '{"status":"' + params[:sig_service].to_s + ' sig recipient: ' + params[:sig_recipient].to_s + 'Unser Digest:' + digest.to_s + '"}'
     end
   end
 
