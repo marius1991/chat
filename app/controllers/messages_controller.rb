@@ -76,7 +76,7 @@ class MessagesController < ApplicationController
           @messages = Message.where(recipientname: params[:id]).where(is_called: false).each
           if(@messages.blank?)
             respond_to do |format|
-              format.json { render json: '"status":"5"'}
+              format.json { render json: '{"status":"6"}'}
             end
           else
             @messages.each do |m|
@@ -89,7 +89,7 @@ class MessagesController < ApplicationController
           end
         else
           respond_to do |format|
-            format.json { render json: '{"status":"3"}'}
+            format.json { render json: '{"status":"5"}'}
           end
         end
       else
