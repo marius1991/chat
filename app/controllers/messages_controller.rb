@@ -44,7 +44,7 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception
-      render json:  '{"status":"3"}'
+      render json:  '{"status":"2"}'
     end
   end
 
@@ -75,7 +75,7 @@ class MessagesController < ApplicationController
         end
       end
     rescue Exception
-      render json:  '{"status":"3"}'
+      render json:  '{"status":"2"}'
     end
   end
 
