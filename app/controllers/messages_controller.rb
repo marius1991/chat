@@ -74,7 +74,7 @@ class MessagesController < ApplicationController
       if decrypt_digest == digest then
         if (Time.now.to_i - params[:timestamp].to_i) < 300 and (Time.now.to_i - params[:timestamp].to_i) >= 0  then
           @messages = Message.where(recipientname: params[:id]).where(is_called: false).each
-          if(@messages.blank?)
+          if(@messages.empty?)
             respond_to do |format|
               format.json { render json: '{"status":"6"}'}
             end
@@ -84,11 +84,8 @@ class MessagesController < ApplicationController
               m.save
             end
             respond_to do |format|
-              format.json { render json: '{"status":"6"}'}
+              format.json { render json: @messages}
             end
-            #respond_to do |format|
-            #  format.json { render json: @messages}
-            #end
           end
         else
           respond_to do |format|
