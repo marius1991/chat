@@ -85,8 +85,8 @@ class MessagesController < ApplicationController
           format.json { render json: @success = '{"status":"2"}'}
         end
       end
-    rescue Exception
-      render json:  '{"status":"4"}'
+    rescue Exception => e
+      render json:  '{"status":"4 ' + e.message + ' "}'
     end
   end
 
