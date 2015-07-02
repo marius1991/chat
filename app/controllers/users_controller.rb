@@ -50,7 +50,7 @@ class UsersController < ApplicationController
       @user = User.find_by_name(params[:id])
       else
         respond_to do |format|
-          format.json { render json: @success = '{"status":"3"}'} #and return
+          format.json { render json: '{"status":"3"}'}
         end
       end
     end
